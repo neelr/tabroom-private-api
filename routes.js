@@ -28,7 +28,9 @@ const query = (search) => {
                         query(row).children().map((idx,desc) => {
                             if (idx == 1) {
                                 name = desc.children[1].children[0].data.trim()
-                                res[name] = {}
+                                res[name] = {
+                                    id:desc.children[1].attribs.href.split("/index/tourn/index.mhtml?tourn_id=")[1]
+                                }
                             } else if (idx != 0){
                                 var col = desc.children[0].data.trim().replace(/\n/g,'').replace(/\t/g,' ');
                                 switch (idx) {
@@ -47,8 +49,3 @@ const query = (search) => {
             })
             })
 }
-query("stanford")
-    .then((d) => {
-        console.log(d)
-    })
-    
