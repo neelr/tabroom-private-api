@@ -61,3 +61,18 @@ var getTabs = id => {
             })
     })
 }
+var fetchEvents = id => {
+    return new Promise(res => {
+        axios.get("https://www.tabroom.com/index/tourn/fields.mhtml?tourn_id="+id)
+        .then(d => {
+            var rounds = []
+            var query = cheerio.load(d.data)
+            query(".sidenote").children().map((_,v) => {
+                if (v.attribs.href) {
+                    rounds.push({eventName:v.children[0].data.trim(),eventID:v.attribs.href.split("/index/tourn/fields.mhtml?tourn_id="+id+"&event_id=")[1]})
+                }
+            })
+            res(rounds)
+        })
+    })
+}
