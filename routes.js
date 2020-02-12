@@ -20,32 +20,44 @@ const query = (search) => {
     return new Promise((solve,rej) => {
         axios.get("https://www.tabroom.com/index/search.mhtml?search="+search)
             .then((d) => {
-                res = {};
+                res = [];
                 var query = cheerio.load(d.data)
                 query("tbody").each((_, table) => {
                     query(table).children().map((_,row) => {
-                        var name = "";
+                        var tournament = {}
                         query(row).children().map((idx,desc) => {
-                            if (idx == 1) {
-                                name = desc.children[1].children[0].data.trim()
-                                res[name] = {
-                                    id:desc.children[1].attribs.href.split("/index/tourn/index.mhtml?tourn_id=")[1]
-                                }
-                            } else if (idx != 0){
+                            if (idx != 0){
                                 var col = desc.children[0].data.trim().replace(/\n/g,'').replace(/\t/g,' ');
                                 switch (idx) {
+                                    case 1:
+                                        tournament.name = desc.children[1].children[0].data.trim()
+                                        tournament.id = desc.children[1].attribs.href.split("/index/tourn/index.mhtml?tourn_id=")[1]
                                     case 2:
-                                        res[name].circuit = col
+                                        tournament.circuit = col
                                     case 3:
-                                        res[name].region = col
+                                        tournament.region = col
                                     case 4:
-                                        res[name].data = col
+                                        tournament.data = col
                                 }
                             }
                         })
+                        res.push(tournament)
                     })
                 })
                 solve(res)
             })
             })
+}
+var getTabs = id => {
+    return new Promise((solve,rej) => {
+        axios.get("https://www.tabroom.com/index/tourn/index.mhtml?tourn_id="+id)
+            .then(d => {
+                res = []
+                var query = cheerio.load(d.data)
+                query("#tabnav").children().map((_,li) => {
+                    res.push(li.children[1].children[0].data.trim())
+                })
+                solve(res)
+            })
+    })
 }
