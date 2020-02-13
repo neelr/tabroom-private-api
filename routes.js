@@ -1,6 +1,7 @@
 var axios = require("axios")
 var qs = require("qs")
 var cheerio = require("cheerio")
+var url = require('url');
 var reg = /\=(.*?)\;/
 
 const getToken = (user, pass) => {
@@ -74,5 +75,48 @@ var fetchEvents = id => {
             })
             res(rounds)
         })
+    })
+}
+var getPairings = (tournament,round) => {
+    return new Promise(solve => {
+        axios.get(`https://www.tabroom.com/index/tourn/postings/round.mhtml?tourn_id=${tournament}&round_id=${round}`)
+            .then((d) => {
+                res = [];
+                head = []
+                var id = "";
+                var query = cheerio.load(d.data)
+                query('thead > tr > th').toArray().map((item, i) => {
+                    head.push(query(item).text().trim())
+                });
+                query('tbody > tr').toArray().map((item, i) => {
+                    res[i] = {}
+                    cheerio.load(item)('tr > td').toArray().map((item,_) => {
+                        cheerio.load(item)("a").toArray().map(x => {
+                            id = x.attribs.href.trim()
+                            id = url.parse(id, true).query
+                            delete id["tourn_id"]
+                            id = Object.values(id)[0]
+                        })
+                        res[i][head[_]] = {name:query(item).text().trim().replace(/\n/g,'').replace(/\t/g,' '),id:id};
+                    });
+                });
+                solve(res)
+            })
+    })
+}
+var getRounds = (tourn, event) => {
+    return new Promise(solve => {
+        axios({url:"https://www.tabroom.com/index/tourn/postings/index.mhtml",method:"POST",data:qs.stringify({tourn_id:tourn,event_id:event})})
+            .then(d => {
+                var rounds = []
+                var query = cheerio.load(d.data)
+                query(".sidenote").children().map((_,v) => {
+                    if (v.attribs.href) {
+                        rounds.push({roundName:v.children[0].data.trim().replace(/\n/g,'').replace(/\t/g,' '),roundID:v.attribs.href.split("/index/tourn/postings/round.mhtml?tourn_id="+
+                        tourn+"&round_id=")[1]})
+                    }
+                })
+                solve(rounds)
+            })
     })
 }
