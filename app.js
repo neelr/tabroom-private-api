@@ -4,7 +4,7 @@ var app = express();
 app.use(express.json())
 
 app.get("/", (req,res) => {
-    res.send("Hi!")
+    res.sendFile(__dirname + "/public/index.html")
 })
 
 app.post("/api/query", (req,res) => {
