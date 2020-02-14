@@ -1,5 +1,5 @@
 # [tabroom-private-api](https://tabroom-private-api.now.sh/api/query)
-An API whipped up using tabroom's private api, because it took to long for them to give a public one! Have fun and make cool things!
+An API whipped up using tabroom's private api, because it took too long for them to give a public one! Have fun and make cool things!
 
 ALL POST REQUESTS
 
