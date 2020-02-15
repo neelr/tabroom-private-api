@@ -43,5 +43,11 @@ app.post("/api/tournament/paradigm", (req,res) => {
             res.send(d)
         })
 })
+app.post("/api/tournament/get", (req,res) => {
+    tools.getTournament(req.body.tourn_id)
+        .then((d) => {
+            res.send(d)
+        })
+})
 
 app.listen(3000, () => console.log("Listening on port 3000!"))

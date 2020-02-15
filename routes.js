@@ -130,6 +130,15 @@ var getParadigm = (tourn, judge) => {
             })
     })
 }
+var getTournament = (id) => {
+    return new Promise(solve => {
+        axios.get('https://www.tabroom.com/index/tourn/index.mhtml?tourn_id='+id)
+            .then(d => {
+                var query = cheerio.load(d.data)
+                solve({meta:query("h5").text().trim().replace(/\n/g, '').replace(/\t/g, ' '),name:query("h2").text().trim()})
+            })
+    })
+}
 module.exports = {
     getToken: getToken,
     query: query,
@@ -137,5 +146,6 @@ module.exports = {
     fetchEvents: fetchEvents,
     getPairings: getPairings,
     getRounds: getRounds,
-    getParadigm:getParadigm
+    getParadigm:getParadigm,
+    getTournament:getTournament
 }
