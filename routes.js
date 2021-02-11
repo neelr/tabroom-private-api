@@ -26,20 +26,20 @@ const query = (search) => {
                     query(table).children().map((_, row) => {
                         var tournament = {}
                         query(row).children().map((idx, desc) => {
-                            if (idx != 0) {
+                                console.log(tournament)
                                 var col = desc.children[0].data.trim().replace(/\n/g, '').replace(/\t/g, ' ');
+                                console.log(col)
                                 switch (idx) {
-                                    case 1:
+                                    case 0:
                                         tournament.name = desc.children[1].children[0].data.trim()
                                         tournament.id = desc.children[1].attribs.href.split("/index/tourn/index.mhtml?tourn_id=")[1]
-                                    case 2:
-                                        tournament.circuit = col
-                                    case 3:
+                                    case 1:
                                         tournament.region = col
-                                    case 4:
-                                        tournament.data = col
+                                    case 2:
+                                        tournament.date = col
+                                    case 3:
+                                        tournament.circuit = col
                                 }
-                            }
                         })
                         res.push(tournament)
                     })
